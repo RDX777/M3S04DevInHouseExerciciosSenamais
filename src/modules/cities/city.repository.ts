@@ -21,15 +21,15 @@ export class CityRepository extends Repository<CityEntity> {
     return this.find();
   }
 
-  async createCity(newCountry: CreateCityDto): Promise<CityEntity> {
-    const country = new CityEntity();
-    const dataCountry = {
-      ...country,
-      ...newCountry,
+  async createCity(newCity: CreateCityDto): Promise<CityEntity> {
+    const city = new CityEntity();
+    const dataCity = {
+      ...city,
+      ...newCity,
     };
 
-    const countrySave = await this.save(dataCountry);
-    return countrySave;
+    const citySave = await this.save(dataCity);
+    return citySave;
   }
 
   async deleteCity(city: CityEntity): Promise<boolean> {

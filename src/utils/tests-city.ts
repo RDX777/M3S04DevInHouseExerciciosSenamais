@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/explicit-function-return-type */
 import { CreateCityDto } from 'src/core/dtos';
 import { CityEntity } from 'src/modules/cities/entities/city.entity';
 import { StateEntity } from 'src/modules/states/entities/state.entity';
@@ -14,5 +15,13 @@ export class TestCityStatic {
     city.deletedAt = null;
 
     return city;
+  }
+
+  static cityDto(): CreateCityDto {
+    const cityBodyDto = new CreateCityDto();
+    cityBodyDto.name = 'Cidade 1';
+    cityBodyDto.state_id = 1;
+
+    return cityBodyDto;
   }
 }

@@ -1,4 +1,6 @@
-import { IsNotEmpty, IsString } from '@nestjs/class-validator';
+import { IsNotEmpty, IsString, ValidateNested } from '@nestjs/class-validator';
+import { Type } from 'class-transformer';
+import { StateEntity } from 'src/core/entities';
 
 export class CreateCityDto {
   @IsString()

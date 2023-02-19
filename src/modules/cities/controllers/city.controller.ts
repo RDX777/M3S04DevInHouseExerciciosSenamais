@@ -81,8 +81,8 @@ export class CityController {
   @Post('create')
   @ApiResponses({ 201: CreateCityDto })
   @UsePipes(new ValidationPipe())
-  async createCountry(@Body() newCity: CreateCityDto): Promise<CityEntity> {
-    return this.cityService.createCity(newCity);
+  async createCity(@Body() newCity: CreateCityDto): Promise<CityEntity> {
+    return await this.cityService.createCity(newCity);
   }
 
   @ApiOperation({
