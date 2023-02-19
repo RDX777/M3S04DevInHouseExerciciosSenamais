@@ -12,6 +12,7 @@ describe('countryService', () => {
     getById: jest.fn(),
     createCity: jest.fn(),
     getByName: jest.fn(),
+    updateCity: jest.fn(),
   };
 
   beforeAll(async () => {
@@ -33,6 +34,7 @@ describe('countryService', () => {
     mockRepository.getById.mockReset();
     mockRepository.createCity.mockReset();
     mockRepository.getByName.mockReset();
+    mockRepository.updateCity.mockReset();
   });
 
   it('deveria ser definido cityService', () => {
@@ -103,6 +105,55 @@ describe('countryService', () => {
       await cityService.createCity(cityDto).catch((error: Error) => {
         expect(error).toMatchObject({
           message: 'cityNotSave',
+        });
+        expect(error).toBeInstanceOf(BadRequestException);
+      });
+    });
+  });
+
+  describe('updateCity', () => {
+    it('deveria atualizar uma cidade corretamente', async () => {
+      const id = 1;
+      const city = TestCityStatic.updateCityDto();
+      const updatedCity = TestCityStatic.updatedCityData();
+
+      mockRepository.getById.mockReturnValue(id);
+      mockRepository.updateCity.mockReturnValue(updatedCity);
+
+      const saveCity = await cityService.updateCity(id, city);
+
+      expect(saveCity).toMatchObject({
+        name: updatedCity.name,
+        state_id: updatedCity.state_id,
+      });
+      expect(mockRepository.getById).toHaveBeenCalledTimes(1);
+      expect(mockRepository.updateCity).toHaveBeenCalledTimes(1);
+    });
+
+    it('deveria retornar uma exceção, pois a cidade não existe', async () => {
+      const id = null;
+      const city = TestCityStatic.updateCityDto();
+
+      mockRepository.getById.mockReturnValue(id);
+      await cityService.updateCity(id, city).catch((error: Error) => {
+        expect(error).toMatchObject({
+          message: 'cityNotFound',
+        });
+        expect(error).toBeInstanceOf(NotFoundException);
+      });
+      expect(mockRepository.getById).toHaveBeenCalledTimes(1);
+    });
+
+    it('deveria retornar uma exceção, pois houve uma falha ao atualizar a cidade', async () => {
+      const id = 1;
+      const city = TestCityStatic.updateCityDto();
+
+      mockRepository.getById.mockReturnValue(id);
+      mockRepository.updateCity.mockReturnValue(null);
+
+      await cityService.updateCity(id, city).catch((error: Error) => {
+        expect(error).toMatchObject({
+          message: 'cityNotUpdate',
         });
         expect(error).toBeInstanceOf(BadRequestException);
       });
