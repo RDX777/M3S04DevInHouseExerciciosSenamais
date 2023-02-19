@@ -12,6 +12,7 @@ describe('CityController', () => {
   const mockService = {
     findById: jest.fn(),
     createCity: jest.fn(),
+    updateCity: jest.fn(),
   };
 
   beforeAll(async () => {
@@ -29,6 +30,7 @@ describe('CityController', () => {
   beforeEach(() => {
     mockService.findById.mockReset();
     mockService.createCity.mockReset();
+    mockService.updateCity.mockReset();
   });
 
   it('deveria estar definido', () => {
@@ -66,6 +68,27 @@ describe('CityController', () => {
     it('deveria retornar uma exceção, caso algum campo do body for nulo', async () => {
       const anyValue = 'anyValue' as unknown as CreateCityDto;
       await cityController.createCity(anyValue).catch((error: Error) => {
+        expect(error).toBeInstanceOf(BadRequestException);
+      });
+    });
+  });
+
+  describe('updateCity', () => {
+    it('deve atualizar uma cidade', async () => {
+      const id = 1;
+      const city = TestCityStatic.updateCityDto();
+      const updatedCity = TestCityStatic.updatedCityData();
+
+      const result = mockService.updateCity(id, updatedCity);
+
+      const newCity = await cityController.updateCity(id, city);
+      expect(newCity).toEqual(result);
+    });
+
+    it('deveria retornar uma exceção, caso id seja nulo', async () => {
+      const anyValue = 'anyValue' as unknown as number;
+      const city = TestCityStatic.updateCityDto();
+      await cityController.updateCity(anyValue, city).catch((error: Error) => {
         expect(error).toBeInstanceOf(BadRequestException);
       });
     });
