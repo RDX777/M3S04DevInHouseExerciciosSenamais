@@ -8,6 +8,7 @@ import {
   Body,
   UsePipes,
   Patch,
+  BadRequestException,
 } from '@nestjs/common';
 import { StateService } from '../../states/services/state.service';
 import { CityService } from '../services/city.service';
@@ -18,6 +19,7 @@ import { CityEntity } from '../entities/city.entity';
 import { ApiResponses } from 'src/utils/decorators';
 import { CreateCityDto } from '../dto/create-city.dto';
 import { UpdateCityDto } from '../dto/update-city.dto';
+import { isNumber } from 'class-validator';
 
 @ApiTags('cities')
 @Controller('city')
@@ -28,7 +30,11 @@ export class CityController {
   ) { }
 
   @Get(':id')
+  @UsePipes(new ValidationPipe())
   async getById(@Param('id') id: number): Promise<CityEntity> {
+    if (!isNumber(id)) {
+      throw new BadRequestException('FieldMustBeNumber');
+    }
     return await this.cityService.findById(id);
   }
 
