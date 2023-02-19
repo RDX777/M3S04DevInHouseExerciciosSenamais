@@ -13,6 +13,8 @@ describe('countryService', () => {
     createCity: jest.fn(),
     getByName: jest.fn(),
     updateCity: jest.fn(),
+    deleteById: jest.fn(),
+    deleteCity: jest.fn(),
   };
 
   beforeAll(async () => {
@@ -35,6 +37,8 @@ describe('countryService', () => {
     mockRepository.createCity.mockReset();
     mockRepository.getByName.mockReset();
     mockRepository.updateCity.mockReset();
+    mockRepository.deleteById.mockReset();
+    mockRepository.deleteCity.mockReset();
   });
 
   it('deveria ser definido cityService', () => {
@@ -156,6 +160,47 @@ describe('countryService', () => {
           message: 'cityNotUpdate',
         });
         expect(error).toBeInstanceOf(BadRequestException);
+      });
+    });
+  });
+
+  describe('deleteById', () => {
+    it('deveria deletar uma cidade corretamente', async () => {
+      const id = 1;
+
+      const founded = mockRepository.getById.mockReturnValue(id);
+      mockRepository.deleteCity.mockReturnValue(founded);
+
+      const deletedCity = await cityService.deleteById(id);
+
+      expect(deletedCity).toEqual('Cidade deletada com sucesso');
+      expect(mockRepository.getById).toHaveBeenCalledTimes(1);
+    });
+
+    it('deveria retornar uma exceção, pois a cidade não existe', async () => {
+      const id = null;
+
+      mockRepository.getById.mockReturnValue(id);
+      await cityService.deleteById(id).catch((error: Error) => {
+        expect(error).toMatchObject({
+          message: 'cityNotFound',
+        });
+        expect(error).toBeInstanceOf(NotFoundException);
+      });
+      expect(mockRepository.getById).toHaveBeenCalledTimes(1);
+    });
+
+    it('deveria retornar uma exceção, pois houve uma falha ao deletar a cidade', async () => {
+      const id = 1;
+
+      mockRepository.getById.mockReturnValue(id);
+      mockRepository.deleteById.mockReturnValue(null);
+
+      await cityService.deleteById(id).catch((error: Error) => {
+        expect(error).toMatchObject({
+          message: 'CityNotDelete',
+        });
+        expect(error).toBeInstanceOf(NotFoundException);
       });
     });
   });
