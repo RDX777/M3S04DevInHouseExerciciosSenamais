@@ -10,6 +10,8 @@ describe('countryService', () => {
 
   const mockRepository = {
     getById: jest.fn(),
+    createCity: jest.fn(),
+    getByName: jest.fn(),
   };
 
   beforeAll(async () => {
@@ -29,14 +31,16 @@ describe('countryService', () => {
 
   beforeEach(() => {
     mockRepository.getById.mockReset();
+    mockRepository.createCity.mockReset();
+    mockRepository.getByName.mockReset();
   });
 
-  it('deveria ser definido countryService', () => {
+  it('deveria ser definido cityService', () => {
     expect(cityService).toBeDefined();
   });
 
-  it('deveria ser definido countryRepository', () => {
-    expect(cityService).toBeDefined();
+  it('deveria ser definido cityRepository', () => {
+    expect(cityRepository).toBeDefined();
   });
 
   describe('findById', () => {
@@ -55,6 +59,53 @@ describe('countryService', () => {
         NotFoundException,
       );
       expect(mockRepository.getById).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('createCity', () => {
+    it('deveria criar uma cidade corretamente', async () => {
+      const city = TestCityStatic.cityData();
+      const cityDto = TestCityStatic.cityDto();
+
+      mockRepository.getByName.mockReturnValue(null);
+      mockRepository.createCity.mockReturnValue(city);
+
+      const saveCity = await cityService.createCity(cityDto);
+
+      expect(saveCity).toMatchObject({
+        name: city.name,
+        state_id: city.state_id,
+      });
+      expect(mockRepository.getByName).toHaveBeenCalledTimes(1);
+      expect(mockRepository.createCity).toHaveBeenCalledTimes(1);
+    });
+
+    it('deveria retornar uma exceção, pois a cidade já existe', async () => {
+      const city = TestCityStatic.cityData();
+      const cityDto = TestCityStatic.cityDto();
+
+      mockRepository.getByName.mockReturnValue(city);
+      await cityService.createCity(cityDto).catch((error: Error) => {
+        expect(error).toMatchObject({
+          message: 'entityWithArgumentsExists',
+        });
+        expect(error).toBeInstanceOf(BadRequestException);
+      });
+      expect(mockRepository.getByName).toHaveBeenCalledTimes(1);
+    });
+
+    it('deveria retornar uma exceção, pois houve uma falha ao salvar a cidade', async () => {
+      const cityDto = TestCityStatic.cityDto();
+
+      mockRepository.getByName.mockReturnValue(null);
+      mockRepository.createCity.mockReturnValue(null);
+
+      await cityService.createCity(cityDto).catch((error: Error) => {
+        expect(error).toMatchObject({
+          message: 'cityNotSave',
+        });
+        expect(error).toBeInstanceOf(BadRequestException);
+      });
     });
   });
 });
