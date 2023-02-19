@@ -25,7 +25,7 @@ export class CityService {
   //   await this.cityRepository.createCity(newCity);
   // }
 
-  async deleteCity(id: number): Promise<string> {
+  async deleteById(id: number): Promise<string> {
     const foundCity = await this.cityRepository.getById(id);
 
     if (!foundCity) {

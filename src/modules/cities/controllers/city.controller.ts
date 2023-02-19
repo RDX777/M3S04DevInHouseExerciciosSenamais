@@ -70,7 +70,7 @@ export class CityController {
   })
   @Delete(':id')
   async deleteById(@Param('id') id: number): Promise<string> {
-    return await this.cityService.deleteCity(id);
+    return await this.cityService.deleteById(id);
   }
 
   @ApiOperation({

@@ -13,6 +13,7 @@ describe('CityController', () => {
     findById: jest.fn(),
     createCity: jest.fn(),
     updateCity: jest.fn(),
+    deleteById: jest.fn(),
   };
 
   beforeAll(async () => {
@@ -31,6 +32,7 @@ describe('CityController', () => {
     mockService.findById.mockReset();
     mockService.createCity.mockReset();
     mockService.updateCity.mockReset();
+    mockService.deleteById.mockReset();
   });
 
   it('deveria estar definido', () => {
@@ -89,6 +91,24 @@ describe('CityController', () => {
       const anyValue = 'anyValue' as unknown as number;
       const city = TestCityStatic.updateCityDto();
       await cityController.updateCity(anyValue, city).catch((error: Error) => {
+        expect(error).toBeInstanceOf(BadRequestException);
+      });
+    });
+  });
+
+  describe('deleteById', () => {
+    it('deve deletar uma cidade', async () => {
+      const id = 1;
+
+      const result = mockService.deleteById(id);
+
+      const deletedCity = await cityController.deleteById(id);
+      expect(deletedCity).toEqual(result);
+    });
+
+    it('deveria retornar uma exceção, caso id seja nulo', async () => {
+      const anyValue = 'anyValue' as unknown as number;
+      await cityController.deleteById(anyValue).catch((error: Error) => {
         expect(error).toBeInstanceOf(BadRequestException);
       });
     });
